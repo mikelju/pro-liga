@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRO LIGA</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #ff4d4d;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: rgba(42, 42, 42, 0.8);
+            box-shadow: 0 0 10px rgba(255,77,77,0.3);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        th {
+            background-color: #ff4d4d;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        button {
+            background-color: #ff4d4d;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: #ff3333;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .dice {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            margin: 0 10px;
+            box-shadow: 0 0 10px rgba(255,77,77,0.5);
+            transition: all 0.3s ease;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .dice.rolling {
+            animation: roll 0.5s ease-in-out;
+        }
+
+        @keyframes roll {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(720deg) rotateY(720deg); }
+        }
+
+        .match-info {
+            background-color: rgba(42, 42, 42, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(255,77,77,0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .round-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,77,77,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4em;
+            color: #fff;
+            z-index: 1000;
+            animation: fadeInOut 2s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .league-end {
+            text-align: center;
+            font-size: 2em;
+            margin-top: 50px;
+        }
+
+        .two-column {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .column {
+            width: 48%;
+        }
+
+        .attacking-team {
+            font-weight: bold;
+            color: #ff4d4d;
+        }
+
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://example.com/soccer-background.jpg');
+            background-size: cover;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .arrow-button {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #ff4d4d;
+            cursor: pointer;
+        }
+        .arrow-button:hover {
+            color: #ff3333;
+        }
+        .round-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .winner-announcement {
+            font-size: 3em;
+            color: #ffd700;
+            text-align: center;
+            margin-top: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Estilos responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .two-column {
+                flex-direction: column;
+            }
+
+            .column {
+                width: 100%;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            .dice {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            table {
+                font-size: 0.8em;
+            }
+
+            .dice {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-image"></div>
+    <div class="container">
+        <h1>PRO LIGA</h1>
+        
+        <div id="setupScreen">
+            <h2>Configuración de Equipos</h2>
+            <table id="teamSetup">
+                <tr>
+                    <th>Equipo</th>
+                    <th>Puntuación (0-100)</th>
+                </tr>
+            </table>
+            <button onclick="saveTeamScores()">Iniciar Liga</button>
+        </div>
+
+        <div id="gameScreen" class="hidden">
+            <div class="round-navigation">
+                <button class="arrow-button" onclick="showPreviousRound()">&#8592;</button>
+                <h2>Jornada <span id="currentRound">1</span></h2>
+                <button class="arrow-button" onclick="showNextRound()">&#8594;</button>
+            </div>
+            <div id="matchInfo" class="match-info"></div>
+            <div class="dice-container">
+                <div class="dice" id="dice1">?</div>
+                <div class="dice" id="dice2">?</div>
+            </div>
+            <button onclick="rollDice()">Tirar dados</button>
+            <button onclick="finishLeague()">Finalizar Liga</button>
+            <div class="two-column">
+                <div class="column">
+                    <div id="roundResults"></div>
+                </div>
+                <div class="column">
+                    <div id="classification"></div>
+                </div>
+            </div>
+            <button onclick="resetGame()">Reiniciar juego</button>
+        </div>
+    </div>
+
+    <script>
+        const teams = ['Real Madrid', 'Barcelona', 'Sevilla', 'Atlético de Madrid', 'Osasuna', 'Real Betis', 'Valencia', 'Athletic de Bilbao'];
+        let teamScores = {};
+        let matches = [];
+        let currentRound = 1;
+        let currentMatch = 0;
+        let playCount = 0;
+        let roundResults = [];
+        let leagueTable = [];
+
+        function initializeTeamSetup() {
+            const table = document.getElementById('teamSetup');
+            teams.forEach(team => {
+                const row = table.insertRow();
+                const cellTeam = row.insertCell(0);
+                const cellScore = row.insertCell(1);
+                cellTeam.textContent = team;
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.min = 0;
+                input.max = 100;
+                input.value = localStorage.getItem(team) || 50;
+                cellScore.appendChild(input);
+            });
+        }
+
+        function saveTeamScores() {
+            const inputs = document.querySelectorAll('#teamSetup input');
+            inputs.forEach(input => {
+                const team = input.parentElement.previousElementSibling.textContent;
+                const score = parseInt(input.value);
+                teamScores[team] = score;
+                localStorage.setItem(team, score);
+            });
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            initializeLeague();
+            updateMatchInfo();
+            showRoundTransition(currentRound);
+        }
+
+        function initializeLeague() {
+            const schedule = [
+                [[0,7], [3,4], [1,6], [2,5]],
+                [[0,4], [3,7], [1,5], [2,6]],
+                [[0,3], [4,7], [1,2], [5,6]],
+                [[7,0], [4,3], [6,1], [5,2]],
+                [[4,0], [7,3], [5,1], [6,2]],
+                [[3,0], [7,4], [2,1], [6,5]]
+            ];
+
+            matches = schedule.map(round => 
+                round.map(match => ({
+                    home: teams[match[0]],
+                    away: teams[match[1]],
+                    homeScore: 0,
+                    awayScore: 0
+                }))
+            );
+
+            teams.forEach(team => {
+                leagueTable.push({
+                    team: team,
+                    played: 0,
+                    won: 0,
+                    drawn: 0,
+                    lost: 0,
+                    goalsFor: 0,
+                    goalsAgainst: 0,
+                    goalDifference: 0,
+                    points: 0
+                });
+            });
+
+            updateRoundResults();
+            updateClassification();
+        }
+
+        function updateMatchInfo() {
+            const match = matches[currentRound - 1][currentMatch];
+            const homeTeam = match.home;
+            const awayTeam = match.away;
+
+            const attackingTeam = playCount % 2 === 0 ? homeTeam : awayTeam;
+            const defendingTeam = playCount % 2 === 0 ? awayTeam : homeTeam;
+            
+            const totalScore = teamScores[homeTeam] + teamScores[awayTeam];
+            const scoringProb = ((teamScores[attackingTeam] / totalScore) * (2.7 / 10) * 2) * 2; // Multiplicado por 2
+
+            const minScoreToGoal = Math.floor((1 - scoringProb) * 11) + 2;
+
+            let matchInfo = `
+                <h3>${homeTeam} vs ${awayTeam}</h3>
+                <p>Marcador: ${match.homeScore} - ${match.awayScore}</p>
+                <p>Jugada: ${playCount + 1}/10</p>
+                <p>Ataca: <span class="attacking-team">${attackingTeam}</span></p>
+                <p>Defiende: ${defendingTeam}</p>
+                <p>Probabilidad de gol: ${(scoringProb * 100).toFixed(2)}%</p>
+                <p>Gol si la suma de los dados es ${minScoreToGoal} o más</p>
+            `;
+
+            document.getElementById('matchInfo').innerHTML = matchInfo;
+        }
+
+        function rollDice(simulating = false) {
+            const dice1 = Math.floor(Math.random() * 6) + 1;
+            const dice2 = Math.floor(Math.random() * 6) + 1;
+            const total = dice1 + dice2;
+
+            if (!simulating) {
+                const dice1El = document.getElementById('dice1');
+                const dice2El = document.getElementById('dice2');
+
+                dice1El.classList.add('rolling');
+                dice2El.classList.add('rolling');
+
+                setTimeout(() => {
+                    dice1El.textContent = dice1;
+                    dice2El.textContent = dice2;
+                    dice1El.classList.remove('rolling');
+                    dice2El.classList.remove('rolling');
+                }, 500);
+            }
+
+            const match = matches[currentRound - 1][currentMatch];
+            const attackingTeam = playCount % 2 === 0 ? match.home : match.away;
+            const defendingTeam = playCount % 2 === 0 ? match.away : match.home;
+
+            const totalScore = teamScores[match.home] + teamScores[match.away];
+            const scoringProb = ((teamScores[attackingTeam] / totalScore) * (2.7 / 10) * 2) * 2; // Multiplicado por 2
+
+            const minScoreToGoal = Math.floor((1 - scoringProb) * 11) + 2;
+
+            if (total >= minScoreToGoal) {
+                if (playCount % 2 === 0) {
+                    match.homeScore++;
+                } else {
+                    match.awayScore++;
+                }
+                updateRoundResults();
+            }
+
+            playCount++;
+            if (playCount === 10) {
+                finishMatch();
+            } else {
+                updateMatchInfo();
+            }
+
+            if (!simulating) {
+                updateMatchInfo();
+            }
+        }
+
+        function finishMatch() {
+            const match = matches[currentRound - 1][currentMatch];
+            updateLeagueTable(match);
+            currentMatch++;
+            playCount = 0;
+
+            if (currentMatch === 4) {
+                currentRound++;
+                currentMatch = 0;
+                if (currentRound > 6) {
+                    endLeague();
+                } else {
+                    showRoundTransition(currentRound);
+                }
+            }
+            updateMatchInfo();
+        }
+
+        function updateLeagueTable(match) {
+            const homeTeam = leagueTable.find(t => t.team === match.home);
+            const awayTeam = leagueTable.find(t => t.team === match.away);
+
+            homeTeam.played++;
+            awayTeam.played++;
+            homeTeam.goalsFor += match.homeScore;
+            homeTeam.goalsAgainst += match.awayScore;
+            awayTeam.goalsFor += match.awayScore;
+            awayTeam.goalsAgainst += match.homeScore;
+
+            if (match.homeScore > match.awayScore) {
+                homeTeam.won++;
+                homeTeam.points += 3;
+                awayTeam.lost++;
+            } else if (match.homeScore < match.awayScore) {
+                awayTeam.won++;
+                awayTeam.points += 3;
+                homeTeam.lost++;
+            } else {
+                homeTeam.drawn++;
+                awayTeam.drawn++;
+                homeTeam.points++;
+                awayTeam.points++;
+            }
+
+            homeTeam.goalDifference = homeTeam.goalsFor - homeTeam.goalsAgainst;
+            awayTeam.goalDifference = awayTeam.goalsFor - awayTeam.goalsAgainst;
+
+            leagueTable.sort((a, b) => {
+                if (a.points !== b.points) return b.points - a.points;
+                if (a.goalDifference !== b.goalDifference) return b.goalDifference - a.goalDifference;
+                return b.goalsFor - a.goalsFor;
+            });
+
+            updateClassification();
+        }
+
+        function updateClassification() {
+            let table = `
+                <h3>Clasificación</h3>
+                <table>
+                    <tr>
+                        <th>Posición</th>
+                        <th>Equipo</th>
+                        <th>PJ</th>
+                        <th>G</th>
+                        <th>E</th>
+                        <th>P</th>
+                        <th>GF</th>
+                        <th>GC</th>
+                        <th>DG</th>
+                        <th>Pts</th>
+                    </tr>
+            `;
+
+            leagueTable.forEach((team, index) => {
+                table += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${team.team}</td>
+                        <td>${team.played}</td>
+                        <td>${team.won}</td>
+                        <td>${team.drawn}</td>
+                        <td>${team.lost}</td>
+                        <td>${team.goalsFor}</td>
+                        <td>${team.goalsAgainst}</td>
+                        <td>${team.goalDifference}</td>
+                        <td>${team.points}</td>
+                    </tr>
+                `;
+            });
+
+            table += '</table>';
+            document.getElementById('classification').innerHTML = table;
+        }
+
+        function finishLeague() {
+            const startTime = Date.now();
+            const totalDuration = 10000; // 10 segundos
+
+            function simulateStep() {
+                const elapsedTime = Date.now() - startTime;
+                const progress = elapsedTime / totalDuration;
+
+                if (progress >= 1 || currentRound > 6) {
+                    endLeague();
+                    return;
+                }
+
+                rollDice(true);
+
+                if (playCount === 10) {
+                    finishMatch();
+                }
+
+                requestAnimationFrame(simulateStep);
+            }
+
+            document.getElementById('roundResults').classList.add('simulating');
+            document.getElementById('classification').classList.add('simulating');
+
+            simulateStep();
+        }
+
+        function updateRoundResults() {
+            let results = `
+                <h3>Resultados Jornada ${currentRound}</h3>
+                <table class="results-table">
+                    <tr>
+                        <th>Local</th>
+                        <th>Goles Local</th>
+                        <th>Goles Visitante</th>
+                        <th>Visitante</th>
+                    </tr>
+            `;
+            matches[currentRound - 1].forEach(match => {
+                results += `
+                    <tr>
+                        <td>${match.home}</td>
+                        <td>${match.homeScore}</td>
+                        <td>${match.awayScore}</td>
+                        <td>${match.away}</td>
+                    </tr>
+                `;
+            });
+            results += '</table>';
+            document.getElementById('roundResults').innerHTML = results;
+        }
+
+        function showPreviousRound() {
+            if (currentRound > 1) {
+                currentRound--;
+                document.getElementById('currentRound').textContent = currentRound;
+                updateRoundResults();
+            }
+        }
+
+        function showNextRound() {
+            if (currentRound < 6) {
+                currentRound++;
+                document.getElementById('currentRound').textContent = currentRound;
+                updateRoundResults();
+            }
+        }
+
+        function showRoundTransition(round) {
+            const transition = document.createElement('div');
+            transition.className = 'round-transition';
+            transition.textContent = `Jornada ${round}`;
+            document.body.appendChild(transition);
+            setTimeout(() => {
+                transition.remove();
+            }, 2000);
+        }
+
+        function endLeague() {
+            const winner = leagueTable[0];
+            document.getElementById('matchInfo').innerHTML = `
+                <h2>¡La liga ha terminado!</h2>
+                <div class="winner-announcement">
+                    ¡${winner.team} es el campeón de la PRO LIGA!
+                </div>
+            `;
+            document.getElementById('diceContainer').classList.add('hidden');
+            document.querySelector('button').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('league-end');
+            document.getElementById('gameScreen').innerHTML += '<button onclick="restartLeague()">Empezar otra liga</button>';
+        }
+
+        function restartLeague() {
+            document.getElementById('gameScreen').classList.remove('league-end');
+            document.getElementById('gameScreen').innerHTML = `
+                <div class="round-navigation">
+                    <button class="arrow-button" onclick="showPreviousRound()">&#8592;</button>
+                    <h2>Jornada <span id="currentRound">1</span></h2>
+                    <button class="arrow-button" onclick="showNextRound()">&#8594;</button>
+                </div>
+                <div id="matchInfo" class="match-info"></div>
+                <div class="dice-container">
+                    <div class="dice" id="dice1">?</div>
+                    <div class="dice" id="dice2">?</div>
+                </div>
+                <button onclick="rollDice()">Tirar dados</button>
+                <button onclick="finishLeague()">Finalizar Liga</button>
+                <div class="two-column">
+                    <div class="column">
+                        <div id="roundResults"></div>
+                    </div>
+                    <div class="column">
+                        <div id="classification"></div>
+                    </div>
+                </div>
+                <button onclick="resetGame()">Reiniciar juego</button>
+            `;
+            currentRound = 1;
+            currentMatch = 0;
+            playCount = 0;
+            roundResults = [];
+            leagueTable = [];
+            initializeLeague();
+            updateMatchInfo();
+            showRoundTransition(currentRound);
+        }
+
+        function resetGame() {
+            location.reload();
+        }
+
+        window.onload = initializeTeamSetup;
+    </script>
+</body>
+</html>
